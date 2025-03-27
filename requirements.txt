@@ -1,3 +1,4 @@
 tiktoken
 dotenv-python
 openai
+numpy
