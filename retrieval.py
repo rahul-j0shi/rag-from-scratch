@@ -13,8 +13,25 @@ TOP_NUMBER_OF_CHUNKS_TO_RETRIEVE = 3
 
 
 def load_chunks_with_embeddings() -> list[dict]:
-    return [json.load(open(f'{directory}/{file}')) for directory, subdirectory, files in os.walk('chunks')
-            for file in files if '.json' in file]
+    chunk_data = []
+    
+    for directory, _, files in os.walk('chunks'):
+        for file in files:
+            file_path = os.path.join(directory, file)
+
+            # Check if the file is empty
+            if os.path.getsize(file_path) == 0:
+                print(f"Warning: Skipping empty file {file_path}")
+                continue
+
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    chunk = json.load(f)
+                    chunk_data.append(chunk)
+            except json.JSONDecodeError:
+                print(f"Error: Skipping invalid JSON file {file_path}")
+
+    return chunk_data
 
 
 def perform_vector_similarity(user_question_embedding: list[float],
